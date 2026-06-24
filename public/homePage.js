@@ -65,24 +65,25 @@ moneyManager.sendMoneyCallback = function(data) {
     });
 };
 
-const favoritesWidget = new FavoritesWidget();
-
-function updateFavorites() {
+function updateFavoritesAndUsers() {
     ApiConnector.getFavorites(function(response) {
         if (response.success) {
             favoritesWidget.clearTable();
             favoritesWidget.fillTable(response.data);
             favoritesWidget.updateUsersList(response.data);
+            moneyManager.updateUsersList(response.data);
         }
     });
 }
 
-updateFavorites();
+const favoritesWidget = new FavoritesWidget();
+
+updateFavoritesAndUsers();
 
 favoritesWidget.addUserCallback = function(data) {
     ApiConnector.addUserToFavorites(data, function(response) {
         if (response.success) {
-            updateFavorites();
+            updateFavoritesAndUsers();
             favoritesWidget.setMessage(true, 'Пользователь добавлен в избранное!');
         } else {
             favoritesWidget.setMessage(false, response.error || 'Ошибка добавления пользователя');
@@ -93,7 +94,7 @@ favoritesWidget.addUserCallback = function(data) {
 favoritesWidget.removeUserCallback = function(data) {
     ApiConnector.removeUserFromFavorites(data, function(response) {
         if (response.success) {
-            updateFavorites();
+            updateFavoritesAndUsers();
             favoritesWidget.setMessage(true, 'Пользователь удалён из избранного!');
         } else {
             favoritesWidget.setMessage(false, response.error || 'Ошибка удаления пользователя');
